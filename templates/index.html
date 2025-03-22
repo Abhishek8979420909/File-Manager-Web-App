@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Organizer</title>
+</head>
+<body>
+    <h1>File Organizer</h1>
+
+    <!-- Display Current Directory -->
+    <h3>Current Directory: {{ base_path if base_path else "Not Set" }}</h3>
+
+    <!-- Browse Button to Set Directory -->
+    <form method="POST" action="/set_directory">
+        <label for="directory">Select Directory:</label>
+        <input type="text" id="directory" name="directory" readonly required>
+        <button type="button" onclick="browseDirectory()">Browse</button>
+        <button type="submit">Set Directory</button>
+    </form>
+
+    <!-- Add Mapping -->
+    <form method="POST" action="/add_mapping">
+        <h3>Add Folder-Extension Mapping</h3>
+        <label for="folder_name">Folder Name:</label>
+        <input type="text" id="folder_name" name="folder_name" required>
+
+        <label for="extensions">Extensions (comma-separated):</label>
+        <input type="text" id="extensions" name="extensions" required>
+
+        <button type="submit">Add Mapping</button>
+    </form>
+
+    <!-- Display Mappings -->
+    <h3>Current Mappings:</h3>
+    <ul>
+        {% for folder, extensions in mappings.items() %}
+            <li>
+                {{ folder }}: {{ extensions | join(', ') }}
+                <form method="POST" action="/delete_mapping/{{ folder }}" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Organize Files -->
+    <form method="POST" action="/organize">
+        <button type="submit">Organize Files</button>
+    </form>
+
+<script>
+function browseDirectory() {
+  // Use an input element of type "file" to open the system's file explorer
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.webkitdirectory = true; // Allow selecting directories (Chrome/Edge support)
+  
+  input.onchange = (event) => {
+      const directoryPath = event.target.files[0].webkitRelativePath.split('/')[0];
+      document.getElementById('directory').value = directoryPath;
+  };
+  
+  input.click();
+}
+</script>
+
+</body>
+</html>
